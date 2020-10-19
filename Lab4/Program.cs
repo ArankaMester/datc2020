@@ -34,18 +34,18 @@ namespace Lab4
         }
         private static async Task GetAllStudents()
         {
-            Console.WriteLine("Universitate\tCNP\tNume\tPrenume\tEmail\tTelefon\tAn");
+            Console.WriteLine("Universitate\tCNP\tNume\tPrenume\tEmail\tTelefon\tAn\tFacultate");
             TableQuery<StudentEntity> query=new TableQuery<StudentEntity>();
             TableContinuationToken token =null;
             do {
-                TableQuerySegment<StudentEntity.ConvertBack resultSegment= await studentsTable.ExecuteQuerySegmentedAsync(query, token);
-                token= ResultSegment.ContinuationToken;
+                TableQuerySegment<StudentEntity> resultSegment= await studentsTable.ExecuteQuerySegmentedAsync(query, token);
+                token= resultSegment.ContinuationToken;
 
-                foreach(StudentEntity entity in ResultSegment.Results)
+                foreach(StudentEntity entity in resultSegment.Results)
                 {
                     Console.WriteLine("{0}\t{1}\t{2}\r{3}\t{4}\t{5}\t{6}",entity.PartitionKey, entity.RowKey, entity.Nume, entity.Prenume,entity.Telefon,entity.Email,entity.An, entity.Facultate);
                 }
-            }
+            }while(token!=null);
         }
         private static async Task AddNewStudents(){
             var student = new StudentEntity("UPT","2981208053212");
@@ -53,7 +53,7 @@ namespace Lab4
             student.Prenume="Mihai";
             student.Telefon="0771548775";
             student.Email="mihai.popescu@yahoo.com";
-            student.An="3";
+            student.An= 3;
             student.Facultate="AC";
 
             var insertOperation = TableOperation.Insert(student);
@@ -62,7 +62,7 @@ namespace Lab4
         }
         private static async Task EditStudent()
         {
-            var student = new StudentEntity("UVT, 2981208053212");
+            var student = new StudentEntity("UVT", "2981208053212");
             student.Nume="Darla";
             var editOperation = TableOperation.Merge(student);
             await studentsTable.ExecuteAsync(editOperation);
